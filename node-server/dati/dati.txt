@@ -1,0 +1,3 @@
+
+
+NaN|83e67729cc326a1c7049cd0d7de6218b|indexFile.html|6-3-2023|text/html|155;NaN|cac86e066b4cbf2343c4a110c1cfd612|testFileXml.xml|6-3-2023|text/xml|104;NaN|21b2bc3469d07c5de2a494b6f140efd5|provafile.txt|6-3-2023|text/plain|2;

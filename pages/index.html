@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/dataTable.min.css" rel="stylesheet">
+	<link href="css/myStyle.css" rel="stylesheet">
+	<script src="js/jQuery.js" ></script>
+	<script src="js/bootstrap.js" ></script>
+	<script src="js/dataTable.min.js"></script>
+
+</head>
+<body>
+<div id="loader"></div>
+
+<div class="container" style="margin-top: 4%;">
+
+
+	<div class="row">
+			<div class="col-3">
+				<div class="card" style="width: 18rem;" id="sidebar">
+  						<ul class="list-group list-group-flush">
+    						<li class="list-group-item" id="uploadLink"> <a href="/upload">Upload documento</a></li>
+    						<li class="list-group-item" id="storicoLink"><a href="/">Storico documenti</a></li>
+  						</ul>
+				</div>
+				<div class="tree">
+					
+
+				</div>
+			</div>
+
+
+		<div class="col-6" >
+
+			<table id="docs" style="width: 140%;" >
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Nome file</th>
+						<th>Nome originale</th>
+						<th>Dimensione</th>
+						<th>MIME</th>
+						<th>Data caricamento</th>
+					</tr>
+				</thead>
+				<body></body>
+				</table>
+		</div>
+	</div>
+			<script>
+				var table=null;
+				$(document).ready(function(){
+						table=$('#docs').DataTable({
+							'pagings':true,
+							'ordering':true,
+							'language':{
+								'emptyTable':'Non ci sono documenti da mostrare'
+							},
+							"scrollX": true,
+						})
+					function init(){
+						$.ajax({
+							"type":"GET",
+							"url":"/init",
+							"dataType":"json",
+							"cache":false,
+							beforeSend:function(){
+								$('#loader').show();
+							},success:function(xhr){
+								var response=xhr;
+								if(xhr){
+									console.log(xhr);
+									for(var i in response){
+										var id=response[i].id;
+										var nomeFile=response[i].nomeFile;
+										var nomeFileOriginale=response[i].nomeFileOriginale;
+										var dataCaricamento=response[i].dataCaricamento;
+										var mime=response[i].mime;
+										var size=response[i].size;
+										table.row.add([id,nomeFile,nomeFileOriginale,size,mime,dataCaricamento]).draw();
+									}
+								}
+							},complete:function(){
+								$('#loader').hide();
+							}
+
+
+						});
+					}
+					
+					$('#sidebar>ul>li').mouseover(function(){
+						$(this).css('background-color','#33B5FF');
+					})
+
+					$('#sidebar>ul>li').mouseout(function(){
+						$(this).css('background-color','white');
+					})
+
+
+					init();
+				});
+				
+				
+				
+			</script>
+</div>
+</body>
+</html>

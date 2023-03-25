@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/dataTable.min.css" rel="stylesheet">
+	<link href="css/myStyle.css" rel="stylesheet">
+	<script src="js/jQuery.js"></script>
+	<script src="js/bootstrap.js"></script>
+
+</head>
+<body >
+	
+	<div id="loader"></div>
+<div class="container" style="margin-top: 4%;">
+
+	
+	<div class="row">
+			<div class="col-3">
+				<div class="card" style="width: 18rem;" id="sidebar">
+  						<ul class="list-group list-group-flush">
+    						<li class="list-group-item" id="uploadLink"> <a href="/upload">Upload documento</a></li>
+    						<li class="list-group-item" id="storicoLink"><a href="/">Storico documenti</a></li>
+  						</ul>
+				</div>
+				<div class="tree">
+							
+				</div>
+			</div>
+
+
+		<div class="col-6" >
+			<form  enctype="multipart/form-data" id="formUpload">
+  				<div class="mb-3">
+    				<label for="docs" class="form-label">Docs</label>
+    				<input type="file" class="form-control" id="doc" name="docs">
+  				</div>
+  				
+  				<input type="button" class="btn btn-primary" id="uploadFileButton" value="Carica">
+			</form>
+			
+		</div>
+		
+	</div>				
+	<div class="modal" tabindex="-1" id="modalUpload">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="titleModal"></h5>
+			  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body" id="message">
+			 
+			</div>
+			<div class="modal-footer">
+			  <input class="btn btn-secondary" data-bs-dismiss="modal" id="closeButton" value="chiudi">
+			</div>
+		  </div>
+		</div>
+	  </div>
+
+			<script>
+
+				$(document).ready(function(){
+					
+
+					$('#sidebar>ul>li').mouseover(function(){
+						$(this).css('background-color','#33B5FF');
+					})
+
+					$('#sidebar>ul>li').mouseout(function(){
+						$(this).css('background-color','white');
+					})
+
+					
+					$('#uploadFileButton').click(function(){
+						if(!$('#doc').val()){
+							$('#titleModal').append('<p>Errore nel caricamento del file</p>');
+							$('#message').append('<p>Il file non  caricato. Riprovare caricando il file</p>');
+							$('#modalUpload').modal('show');
+							
+						}else{
+							//var param=$('#formUpload').serialize();
+							var formDataFile=new FormData();
+							formDataFile.append('docs',$('#doc')[0].files[0]);
+							console.log($('#doc')[0].files[0]);
+							var message="";
+							var status=0;
+							$.ajax({
+								"type":"POST",
+								"data":formDataFile,
+								"url":"upload",
+								"processData": false,
+								"cache": false,
+								"contentType": false,
+								beforeSend:function(){
+									$('#loader').show();
+								},
+								success:function(data){
+					
+									if(data){
+										message=data.message;
+										status=data.status;
+									}else{
+										console.log('response non valorizzata')
+										message="Errore riscontrato nella fase di richiesta";
+										status=500;
+									}
+								},
+								complete:function(){
+									$('#titleModal').append('<p>Code:'+status+'</p>');
+									$('#message').append('<p>'+message+'</p>');
+									$('#modalUpload').modal('show');
+									$('#doc').val(null);
+									$('#loader').hide();
+								}
+
+							});
+						}
+						return ;
+					});
+					$('#closeButton').click(function(){
+						
+						$('#titleModal>p').each(function(){
+							$(this).remove();
+						})
+						$('#message>p').each(function(){
+							$(this).remove();
+						})
+
+						console.log('sei qua');
+						return;
+					})
+
+				});
+
+
+				
+
+			</script>
+	
+</div>
+</body>
+</html>
